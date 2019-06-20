@@ -1,5 +1,6 @@
 const searchForm = document.getElementById("search-form");
 const movies = document.getElementById("movies");
+const urlPoster = "http://image.tmdb.org/t/p/w500";
 
 function apiSearch(event) {
 	event.preventDefault();
@@ -10,6 +11,7 @@ function apiSearch(event) {
 
 	fetch(server)
 		.then(function (value) {
+			if (value.status !== 200) return Promise.reject(value);
 			return value.json();
 		})
 		.then(function (outPut) {
@@ -20,16 +22,19 @@ function apiSearch(event) {
 					firstDate = item.release_date || item.first_air_date;
 
 				inner += `<div class='col-12 p-3 mb-3 border bg-white rounded d-flex flex-row flex-wrap'>
-			<div class='col-6'>${nameItem}</div><div class='col-6'>Дата выхода: ${firstDate}</div>
+			<div class='col-12'>${nameItem}</div>
+			<div class='col-12'>Дата выхода: ${firstDate}</div>
+			<img src="${urlPoster + item.poster_path}" alt="${nameItem}" class="col-6"></img>
 			<div class='col-12 mt-3'>${item.overview}</div></div>`;
 
 				movies.innerHTML = inner;
-				console.log(outPut);
-			})
+			});
+
+			console.log(outPut);
 		})
 		.catch(function (reason) {
 			movies.innerHTML = "Упс, что то пошло не так:(";
-			console.log("error: " + reason.status);
+			console.error("error: " + reason.status);
 		});
 }
 
